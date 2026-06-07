@@ -1,0 +1,19 @@
+{
+  "name": "forged-smp-backend",
+  "version": "2.1.0",
+  "description": "Forged SMP — Discord bot + Minecraft WebSocket bridge + community API",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18.0.0" },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "pg": "^8.11.3",
+    "express-session": "^1.17.3",
+    "connect-pg-simple": "^9.0.1",
+    "dotenv": "^16.3.1",
+    "helmet": "^7.1.0",
+    "discord.js": "^14.14.1",
+    "ws": "^8.16.0"
+  }
+}
