@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HTML Design Mastery — Full Tutorial</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Share+Tech+Mono&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet">
+<style>
+  /* ══════════════════════════════════════════
+     LESSON 1 — CSS VARIABLES (Design Tokens)
+     This is your "color palette command center."
+     Change one value here, and it updates
+     everywhere on the page automatically.
+  ══════════════════════════════════════════ */
+  :root {
+    --bg:          #0b0b0e;
+    --surface:     #111114;
+    --panel:       #15151a;
+    --border:      #1e1e26;
+    --border-acc:  #2a1a2a;
+
+    --primary:     #7c3aed;        /* violet — your main accent */
+    --primary-dim: #3b1a6e;
+    --primary-glow: rgba(124,58,237,0.15);
+    --primary-soft: rgba(124,58,237,0.07);
+
+    --gold:        #c8923a;
+    --gold-dim:    rgba(200,146,58,0.12);
+    --green:       #3a9e6a;
+    --green-dim:   rgba(58,158,106,0.12);
+
+    --text:        #cdc8d8;
+    --text-dim:    #6a6478;
+    --text-head:   #eae6f0;
+    --code-bg:     #09090c;
+  }
+
+  /* ══════════════════════════════════════════
+     LESSON 2 — THE UNIVERSAL RESET
+     Removes all default browser spacing and
+     sizing quirks before you start building.
+  ══════════════════════════════════════════ */
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  /* ══════════════════════════════════════════
+     LESSON 3 — BODY AS A CANVAS
+     The body is your entire page. Set the
+     background, font, and a layered texture
+     using multiple background-image values.
+  ══════════════════════════════════════════ */
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 17px;
+    line-height: 1.8;
+    min-height: 100vh;
+    background-image:
+      /* Radial glow from the top center */
+      radial-gradient(ellipse 70% 40% at 50% -10%, rgba(124,58,237,0.08) 0%, transparent 60%),
+      /* Subtle vertical grid lines */
+      repeating-linear-gradient(
+        90deg,
+        transparent 0px,
+        transparent 79px,
+        rgba(30,20,40,0.2) 80px
+      );
+  }
+
+  /* ══════════════════════════════════════════
+     LESSON 4 — PSEUDO-ELEMENTS (::before / ::after)
+     These are "ghost" layers you can attach to
+     any element — great for overlays, lines,
+     and decorative effects without extra HTML.
+  ══════════════════════════════════════════ */
+  body::before {
+    content: '';           /* required — even if empty */
+    position: fixed;
+    inset: 0;              /* shorthand for top/right/bottom/left: 0 */
+    pointer-events: none;  /* so it doesn't block clicks */
+    z-index: 0;
+    /* Scanline texture: subtle horizontal stripes */
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.035) 2px,
+      rgba(0,0,0,0.035) 4px
+    );
+  }
+
+  /* ══════════════════════════════════════════
+     LESSON 5 — LAYOUT WRAPPER
+     Center your content and control max-width.
+     z-index: 1 puts it above the ::before overlay.
+  ══════════════════════════════════════════ */
+  .wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 28px 80px;
+  }
+
+  /* ══════════════════════════════════════════
+     LESSON 6 — TYPOGRAPHY SYSTEM
+     Use different fonts for different roles.
+     Bebas Neue = display/titles
+     Share Tech Mono = labels/code/UI text
+     Crimson Pro = body copy
+  ══════════════════════════════════════════ */
+  h1, h2 {
+    font-family: 'Bebas Neue', cursive;
+    letter-spacing: 2px;
+    color: var(--text-head);
+    line-height: 1;
+  }
+  h3 {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 22px;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+    margin-top: 32px;
+    margin-bottom: 14px;
+  }
+  p { margin-bottom: 14px; }
+  p:last-child { margin-bottom: 0; }
+
+  /* ══════════════════════════════════════════
+     LESSON 7 — clamp() FOR RESPONSIVE FONT SIZES
+     clamp(MIN, PREFERRED, MAX)
+     The font size scales with viewport width
+     but never goes below MIN or above MAX.
+  ══════════════════════════════════════════ */
+  .lesson-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: clamp(38px, 6vw, 72px);
+    color: var(--text-head);
+    line-height: 0.95;
+    letter-spacing: 2px;
+    text-shadow: 0 0 50px rgba(124,58,237,0.2);
+  }
+  .lesson-title span { color: var(--primary); }
+
+  /* ══════════════════════════════════════════
+     LESSON 8 — EYEBROW LABELS
+     Small mono-spaced text above big headings.
+     Creates visual hierarchy and context.
+  ══════════════════════════════════════════ */
+  .eyebrow {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  /* The line before the eyebrow text */
+  .eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 28px;
+    height: 1px;
+    background: var(--primary);
+  }
+
+  /* ══════════════════════════════════════════
+     LESSON 9 — HERO SECTION
+     The top of your page. Big, bold, animated.
+     overflow: hidden prevents child elements
+     from spilling outside the box.
+  ══════════════════════════════════════════ */
+  .hero {
+    padding: 72px 0 56px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    animation: fadeUp 0.7s ease both;
+  }
+  /* The glowing bottom border line */
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: -28px; right: -28px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  }
+
+  /* ══════════════════════════════════════════
+     LESSON 10 — BADGES / TAGS
+     Small pill labels for features or status.
+     border-radius: 2px = slightly rounded square.
+     border-radius: 999px = full pill shape.
+  ══════════════════════════════════════════ */
+  .badges {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+  }
+  .badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 2px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+  }
+  .badge.purple {
+    border-color: var(--primary-dim);
+    color: var(--primary);
+    background: var(--primary-soft);
+  }
+  .badge.gold {
+    border-color: rgba(200,146,58,0.3);
+    color: var(--gold);
+    background: var(--gold-dim);
+  }
+
+  /* ══════════════════════════════════════════
+     LESSON 11 — SECTION STRUCTURE
+     Each major content area follows the same
+     pattern: a label, a heading, then content.
+  ══════════════════════════════════════════ */
+  .section {
+    margin-top: 64px;
+    padding-top: 4px;
+    animation: fadeUp 0.5s ease both;
+    animation-delay: 0.1s;
+  }
+  .section-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  /* The extending line after the label */
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--primary-dim), transparent);
+  }
+  .section > h2 {
+    font-size: 36px;
+    margin-bottom: 24px;
+  }
+
+  /* ══════════════════════════════════════════
+     LESSON 12 — CARDS
+     Contained blocks for grouped information.
+     The ::before pseudo-element adds a colored
+     stripe on top as an accent.
+  ══════════════════════════════════════════ */
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 22px 26px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--primary), transparent);
+  }
+  .card.gold::before  { background: linear-gradient(90deg, var(--gold), transparent); }
+  .card.green::before { background: linear-gradient(90deg, var(--green), transparent); }
+  .card.dim::before   { background: linear-gradient(90deg, var(--border), transparent); }
+  .card.dim { border-color: var(--border); }
+
+  /* ══════════════════════════════════════════
+     LESSON 13 — INFO / CALLOUT BOXES
+     Left-border highlight boxes for tips,
+     warnings, or notes. The border-left
+     creates a visual "flag" on the side.
+  ══════════════════════════════════════════ */
+  .callout {
+    padding: 14px 18px;
+    border-radius: 3px;
+    margin: 16px 0;
+    border-left: 2px solid var(--primary);
+    background: var(--primary-soft);
+    font-size: 15px;
+  }
+  .callout.gold  { border-left-color: var(--gold);  background: var(--gold-dim); }
+  .callout.green { border-left-color: var(--green); background: var(--green-dim); }
+  .callout.dim   { border-left-color: var(--border); background: var(--surface); color: var(--text-dim); }
+  .callout-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--primary);
+    display: block;
+    margin-bottom: 5px;
+  }
+  .callout.gold  .callout-label { color: var(--gold); }
+  .callout.green .callout-label { color: var(--green); }
+
+  /* ══════════════════════════════════════════
+     LESSON 14 — CODE BLOCKS
+     For showing code snippets. Monospace font,
+     dark background, visible border.
+  ══════════════════════════════════════════ */
+  code {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: var(--primary);
+    background: var(--code-bg);
+    padding: 1px 7px;
+    border-radius: 2px;
+    border: 1px solid var(--border);
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px 22px;
+    overflow-x: auto;
+    margin: 16px 0;
+    position: relative;
+  }
+  pre::before {
+    content: attr(data-lang);      /* reads from data-lang attribute */
+    position: absolute;
+    top: 10px; right: 14px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.7;
+    display: block;
+  }
+  /* Syntax-style coloring classes */
+  .c-tag   { color: #7c9fd4; }
+  .c-attr  { color: var(--gold); }
+  .c-val   { color: #7ec98f; }
+  .c-prop  { color: var(--primary); }
+  .c-num   { color: #e0a07c; }
+  .c-comm  { color: var(--text-dim); font-style: italic; }
+
+  /* ══════════════════════════════════════════
+     LESSON 15 — TABLES
+     For organized data. border-collapse removes
+     gaps between cells. thead gets accent color.
+  ══════════════════════════════════════════ */
+  .table-wrap { overflow-x: auto; margin: 16px 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  thead tr { border-bottom: 1px solid var(--primary-dim); }
+  th {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--primary);
+    font-weight: 400;
+    padding: 10px 14px;
+    text-align: left;
+    background: var(--primary-soft);
+  }
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid rgba(30,20,40,0.7);
+    color: var(--text);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(124,58,237,0.03); }
+  td:first-child {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    color: var(--text-head);
+  }
+  .t-good { color: var(--green); font-family: 'Share Tech Mono', monospace; font-size: 12px; }
+  .t-bad  { color: #e05050;     font-family: 'Share Tech Mono', monospace; font-size: 12px; }
+  .t-note { color: var(--gold); font-family: 'Share Tech Mono', monospace; font-size: 12px; }
+
+  /* ══════════════════════════════════════════
+     LESSON 16 — GRID LAYOUTS
+     CSS Grid for side-by-side panels.
+     gap controls space between columns.
+  ══════════════════════════════════════════ */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 16px;
+  }
+  @media (max-width: 620px) {
+    .two-col { grid-template-columns: 1fr; }
+  }
+  .three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  @media (max-width: 700px) {
+    .three-col { grid-template-columns: 1fr; }
+  }
+  .panel-box {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 18px 20px;
+  }
+  .panel-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 18px;
+    letter-spacing: 1.5px;
+    color: var(--text-head);
+    margin-bottom: 8px;
+  }
+  .panel-title.purple { color: var(--primary); }
+  .panel-title.gold   { color: var(--gold); }
+  .panel-title.green  { color: var(--green); }
+  .panel-desc { font-size: 14px; color: var(--text-dim); }
+
+  /* ══════════════════════════════════════════
+     LESSON 17 — STEP LISTS
+     Numbered steps styled with flexbox.
+     Each number is a large decorative element.
+  ══════════════════════════════════════════ */
+  .steps { list-style: none; padding: 0; }
+  .steps li {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 15px;
+  }
+  .steps li:last-child { border-bottom: none; }
+  .step-num {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 26px;
+    color: var(--primary);
+    line-height: 1;
+    min-width: 28px;
+  }
+  .step-body { flex: 1; }
+  .step-title {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-head);
+    margin-bottom: 4px;
+  }
+
+  /* ══════════════════════════════════════════
+     LESSON 18 — FIXED SIDEBAR (TOC Dots)
+     Position: fixed stays on screen as user scrolls.
+     transform: translateY(-50%) centers it vertically.
+  ══════════════════════════════════════════ */
+  .toc {
+    position: fixed;
+    top: 50%;
+    left: 18px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    z-index: 100;
+  }
+  .toc-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    display: block;
+    text-decoration: none;
+  }
+  .toc-dot:hover,
+  .toc-dot.active {
+    background: var(--primary);
+    box-shadow: 0 0 8px var(--primary);
+  }
+  @media (max-width: 1100px) { .toc { display: none; } }
+
+  /* ══════════════════════════════════════════
+     LESSON 19 — CSS ANIMATIONS
+     @keyframes defines the animation.
+     animation: property applies it.
+  ══════════════════════════════════════════ */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes glowPulse {
+    0%, 100% { opacity: 0.5; }
+    50%       { opacity: 1; }
+  }
+
+  /* ══════════════════════════════════════════
+     LESSON 20 — HOVER TRANSITIONS
+     transition makes property changes smooth.
+     Format: property duration easing
+  ══════════════════════════════════════════ */
+  .hover-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 18px 20px;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    cursor: default;
+  }
+  .hover-card:hover {
+    border-color: var(--primary-dim);
+    background: #17171e;
+    transform: translateY(-2px);
+  }
+
+  /* ══════════════════════════════════════════
+     LESSON 21 — SCROLLBAR STYLING
+     Custom scrollbar using webkit pseudo-elements.
+     Only works in Chrome/Edge/Safari.
+  ══════════════════════════════════════════ */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--primary-dim); border-radius: 2px; }
+
+  /* ══════════════════════════════════════════
+     LESSON 22 — GRADIENT DIVIDERS & LINES
+  ══════════════════════════════════════════ */
+  .divider {
+    height: 1px;
+    margin: 52px 0;
+    background: linear-gradient(90deg, var(--primary-dim), transparent);
+  }
+
+  /* ══════════════════════════════════════════
+     LESSON 23 — FOOTER
+  ══════════════════════════════════════════ */
+  footer {
+    margin-top: 72px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 1.5px;
+    text-align: center;
+  }
+
+  /* ══════════════════════════════════════════
+     LESSON 24 — HIGHLIGHT & MONO UTILITIES
+  ══════════════════════════════════════════ */
+  .mono { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--gold); }
+  .hl   { color: var(--text-head); }
+  strong { color: var(--text-head); font-weight: 600; }
+
+  /* ══════════════════════════════════════════
+     LESSON 25 — COLOR SWATCH DEMO
+  ══════════════════════════════════════════ */
+  .swatch-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 12px 0;
+  }
+  .swatch {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .swatch-box {
+    width: 48px;
+    height: 48px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  .swatch span {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 1px;
+  }
+
+  /* ══════════════════════════════════════════
+     MISC PAGE ELEMENTS
+  ══════════════════════════════════════════ */
+  .top-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 28px;
+    text-align: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    position: relative;
+    z-index: 200;
+  }
+  .lesson-number {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--primary);
+    display: block;
+    margin-bottom: 6px;
+    animation: glowPulse 3s ease infinite;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="top-bar">HTML Design Mastery &nbsp;·&nbsp; Full Tutorial &nbsp;·&nbsp; by Throne Owner</div>
+
+<!-- TOC DOTS -->
+<nav class="toc" aria-label="Sections">
+  <a class="toc-dot active" href="#intro"   title="Introduction"></a>
+  <a class="toc-dot"        href="#vars"    title="CSS Variables"></a>
+  <a class="toc-dot"        href="#reset"   title="Reset & Body"></a>
+  <a class="toc-dot"        href="#typo"    title="Typography"></a>
+  <a class="toc-dot"        href="#layout"  title="Layout"></a>
+  <a class="toc-dot"        href="#hero"    title="Hero Section"></a>
+  <a class="toc-dot"        href="#pseudo"  title="Pseudo-Elements"></a>
+  <a class="toc-dot"        href="#cards"   title="Cards & Callouts"></a>
+  <a class="toc-dot"        href="#code"    title="Code Blocks"></a>
+  <a class="toc-dot"        href="#tables"  title="Tables"></a>
+  <a class="toc-dot"        href="#grid"    title="Grid Layouts"></a>
+  <a class="toc-dot"        href="#motion"  title="Animations"></a>
+  <a class="toc-dot"        href="#sidebar" title="Fixed Sidebar"></a>
+  <a class="toc-dot"        href="#summary" title="Summary"></a>
+</nav>
+
+<div class="wrapper">
+
+  <!-- ── INTRO HERO ── -->
+  <header class="hero" id="intro">
+    <div class="eyebrow">Complete Course</div>
+    <h1 class="lesson-title">HTML Design<br><span>Mastery</span></h1>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-dim);letter-spacing:2px;margin-top:16px;">
+      25 Lessons &nbsp;·&nbsp; Dark Theme &nbsp;·&nbsp; Professional Page Design
+    </div>
+    <div class="badges">
+      <span class="badge purple">CSS Variables</span>
+      <span class="badge purple">Typography</span>
+      <span class="badge">Layout</span>
+      <span class="badge">Pseudo-Elements</span>
+      <span class="badge">Animations</span>
+      <span class="badge gold">Grid</span>
+      <span class="badge gold">Tables</span>
+      <span class="badge">Scrollbar</span>
+    </div>
+  </header>
+
+  <!-- ── WHY THIS APPROACH ── -->
+  <section class="section" id="intro2">
+    <div class="section-label">Before We Start</div>
+    <h2>What You Will Learn</h2>
+    <div class="card gold">
+      <p>
+        This tutorial is based on a real, professional HTML document. Every technique here was used in an actual project — not a toy example. You will learn how to build a <strong>dark-themed, multi-section page</strong> with its own design language: color system, typography, cards, tables, animations, and more.
+      </p>
+      <p>
+        By the end, you will understand how all of these pieces connect into a single cohesive design. Everything is written in <strong>plain HTML and CSS</strong> — no frameworks, no libraries required.
+      </p>
+    </div>
+    <div class="callout green">
+      <span class="callout-label">Who Is This For?</span>
+      Students who already know basic HTML tags like <code>&lt;div&gt;</code>, <code>&lt;p&gt;</code>, <code>&lt;h1&gt;</code> and want to learn how professional pages are actually styled and structured.
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       LESSON GROUP 1: FOUNDATION
+  ══════════════════════════════════ -->
+
+  <!-- ── CSS VARIABLES ── -->
+  <section class="section" id="vars">
+    <div class="section-label">Lesson 1</div>
+    <h2>CSS Variables — Your Design Tokens</h2>
+    <p>
+      CSS variables (also called <strong>custom properties</strong>) let you define a value once and reuse it everywhere. You define them inside <code>:root</code>, which means they apply to the whole page.
+    </p>
+    <pre data-lang="CSS"><code><span class="c-comm">/* Define your variables once */</span>
+<span class="c-tag">:root</span> {
+  <span class="c-prop">--bg</span>:      <span class="c-val">#0b0b0e</span>;
+  <span class="c-prop">--primary</span>: <span class="c-val">#7c3aed</span>;
+  <span class="c-prop">--text</span>:    <span class="c-val">#cdc8d8</span>;
+}
+
+<span class="c-comm">/* Use them anywhere with var() */</span>
+<span class="c-tag">body</span> {
+  <span class="c-prop">background</span>: <span class="c-val">var(--bg)</span>;
+  <span class="c-prop">color</span>:      <span class="c-val">var(--text)</span>;
+}
+
+<span class="c-tag">.card</span> {
+  <span class="c-prop">border</span>: <span class="c-val">1px solid var(--primary)</span>;
+}</code></pre>
+    <div class="callout">
+      <span class="callout-label">Why This Matters</span>
+      If you want to change your accent color from violet to red, you only edit <em>one line</em> in <code>:root</code>. Without variables, you would search-and-replace that color across hundreds of lines.
+    </div>
+
+    <h3>Your Color Palette Demo</h3>
+    <p>Here's the palette used on this very page:</p>
+    <div class="swatch-row">
+      <div class="swatch"><div class="swatch-box" style="background:#0b0b0e;"></div><span>--bg</span></div>
+      <div class="swatch"><div class="swatch-box" style="background:#111114;"></div><span>--surface</span></div>
+      <div class="swatch"><div class="swatch-box" style="background:#15151a;"></div><span>--panel</span></div>
+      <div class="swatch"><div class="swatch-box" style="background:#7c3aed;"></div><span>--primary</span></div>
+      <div class="swatch"><div class="swatch-box" style="background:#3b1a6e;"></div><span>--prim-dim</span></div>
+      <div class="swatch"><div class="swatch-box" style="background:#c8923a;"></div><span>--gold</span></div>
+      <div class="swatch"><div class="swatch-box" style="background:#3a9e6a;"></div><span>--green</span></div>
+      <div class="swatch"><div class="swatch-box" style="background:#cdc8d8;"></div><span>--text</span></div>
+      <div class="swatch"><div class="swatch-box" style="background:#6a6478;"></div><span>--text-dim</span></div>
+    </div>
+    <div class="callout dim">
+      <span class="callout-label">Rule of Thumb</span>
+      Dark themes need at least 3 background shades (bg, surface, panel), 1 accent color, its dim/glow variants, and 2–3 text shades. That's roughly 10–15 variables covering your whole page.
+    </div>
+  </section>
+
+  <!-- ── RESET & BODY ── -->
+  <section class="section" id="reset">
+    <div class="section-label">Lessons 2 &amp; 3</div>
+    <h2>Reset &amp; Body Setup</h2>
+
+    <h3>The Universal Reset</h3>
+    <p>Every browser applies its own default styles. A reset removes them so you start from a clean slate.</p>
+    <pre data-lang="CSS"><code><span class="c-tag">*</span>, <span class="c-tag">*::before</span>, <span class="c-tag">*::after</span> {
+  <span class="c-prop">box-sizing</span>: <span class="c-val">border-box</span>; <span class="c-comm">/* padding stays inside the box */</span>
+  <span class="c-prop">margin</span>:     <span class="c-val">0</span>;              <span class="c-comm">/* no default spacing */</span>
+  <span class="c-prop">padding</span>:    <span class="c-val">0</span>;
+}</code></pre>
+    <div class="callout dim">
+      <span class="callout-label">box-sizing: border-box</span>
+      Without this, if you set <code>width: 300px</code> and add <code>padding: 20px</code>, the box becomes 340px wide. With border-box, it stays 300px — the padding eats into it. This is almost always what you want.
+    </div>
+
+    <h3>Body as a Canvas</h3>
+    <p>The body sets your page's default font, text color, background, and overall feel. You can stack multiple background layers using commas.</p>
+    <pre data-lang="CSS"><code><span class="c-tag">body</span> {
+  <span class="c-prop">background</span>:  <span class="c-val">var(--bg)</span>;
+  <span class="c-prop">color</span>:       <span class="c-val">var(--text)</span>;
+  <span class="c-prop">font-family</span>: <span class="c-val">'Crimson Pro'</span>, Georgia, serif;
+  <span class="c-prop">font-size</span>:   <span class="c-val">17px</span>;
+  <span class="c-prop">line-height</span>: <span class="c-val">1.8</span>;
+  <span class="c-prop">min-height</span>:  <span class="c-val">100vh</span>; <span class="c-comm">/* at least full screen height */</span>
+
+  <span class="c-comm">/* TWO background layers stacked: */</span>
+  <span class="c-prop">background-image</span>:
+    <span class="c-comm">/* 1. Radial glow at the top */</span>
+    <span class="c-val">radial-gradient(ellipse 70% 40% at 50% -10%,
+      rgba(124,58,237,0.08) 0%, transparent 60%)</span>,
+    <span class="c-comm">/* 2. Subtle vertical grid lines */</span>
+    <span class="c-val">repeating-linear-gradient(
+      90deg,
+      transparent 0px,
+      transparent 79px,
+      rgba(30,20,40,0.2) 80px
+    )</span>;
+}</code></pre>
+    <div class="callout">
+      <span class="callout-label">background-image layers</span>
+      Comma-separated backgrounds stack on top of each other. The first one in the list is on top. You can combine gradients, textures, and even images this way.
+    </div>
+  </section>
+
+  <!-- ── TYPOGRAPHY ── -->
+  <section class="section" id="typo">
+    <div class="section-label">Lesson 4</div>
+    <h2>Typography System</h2>
+    <p>Professional pages use <strong>multiple fonts for different roles</strong>. Load them from Google Fonts with a <code>&lt;link&gt;</code> tag in your <code>&lt;head&gt;</code>.</p>
+    <pre data-lang="HTML"><code><span class="c-comm">&lt;!-- In your &lt;head&gt; --&gt;</span>
+<span class="c-tag">&lt;link</span> <span class="c-attr">href</span>=<span class="c-val">"https://fonts.googleapis.com/css2?family=Bebas+Neue
+  &amp;family=Share+Tech+Mono
+  &amp;family=Crimson+Pro:ital,wght@0,400;1,300
+  &amp;display=swap"</span> <span class="c-attr">rel</span>=<span class="c-val">"stylesheet"</span><span class="c-tag">&gt;</span></code></pre>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Font</th><th>Role</th><th>Example Use</th></tr></thead>
+        <tbody>
+          <tr><td>Bebas Neue</td><td class="t-note">Display / Titles</td><td>h1, h2, h3 headings</td></tr>
+          <tr><td>Share Tech Mono</td><td class="t-note">UI Labels / Code</td><td>badges, section labels, table headers, code</td></tr>
+          <tr><td>Crimson Pro</td><td class="t-note">Body / Reading</td><td>paragraphs, descriptions, long text</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>clamp() — Responsive Font Sizes</h3>
+    <pre data-lang="CSS"><code><span class="c-tag">.title</span> {
+  <span class="c-prop">font-size</span>: <span class="c-val">clamp(38px, 6vw, 72px)</span>;
+  <span class="c-comm">/*         MIN    ↑     MAX
+             never  scales  never
+             below  with    above
+             38px   screen  72px  */</span>
+}</code></pre>
+
+    <h3>Letter Spacing &amp; Text Transform</h3>
+    <p>For uppercase mono labels, <code>letter-spacing</code> and <code>text-transform: uppercase</code> are what give them that "military UI" look.</p>
+    <pre data-lang="CSS"><code><span class="c-tag">.section-label</span> {
+  <span class="c-prop">font-family</span>:     <span class="c-val">'Share Tech Mono', monospace</span>;
+  <span class="c-prop">font-size</span>:       <span class="c-val">10px</span>;
+  <span class="c-prop">letter-spacing</span>:  <span class="c-val">4px</span>;
+  <span class="c-prop">text-transform</span>:  <span class="c-val">uppercase</span>;
+  <span class="c-prop">color</span>:           <span class="c-val">var(--primary)</span>;
+}</code></pre>
+
+    <div class="callout gold">
+      <span class="callout-label">Font Pairing Rule</span>
+      One serif or slab for body → readable at small sizes. One condensed display for headings → bold impact. One monospace for UI text → technical and precise. Three fonts is usually the maximum before it feels chaotic.
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       LESSON GROUP 2: STRUCTURE
+  ══════════════════════════════════ -->
+
+  <!-- ── LAYOUT ── -->
+  <section class="section" id="layout">
+    <div class="section-label">Lesson 5</div>
+    <h2>Page Layout &amp; Wrapper</h2>
+    <p>Center your content with a max-width wrapper. This prevents text from stretching too wide on large screens.</p>
+    <pre data-lang="CSS"><code><span class="c-tag">.wrapper</span> {
+  <span class="c-prop">position</span>:   <span class="c-val">relative</span>;
+  <span class="c-prop">z-index</span>:    <span class="c-val">1</span>;          <span class="c-comm">/* above body::before overlay */</span>
+  <span class="c-prop">max-width</span>:  <span class="c-val">980px</span>;
+  <span class="c-prop">margin</span>:     <span class="c-val">0 auto</span>;     <span class="c-comm">/* center horizontally */</span>
+  <span class="c-prop">padding</span>:    <span class="c-val">0 28px 80px</span>; <span class="c-comm">/* no top, sides, big bottom */</span>
+}</code></pre>
+
+    <div class="callout">
+      <span class="callout-label">margin: 0 auto</span>
+      This is the classic centering trick. <code>0</code> = no top/bottom margin. <code>auto</code> = browser divides remaining space equally on both sides → centered.
+    </div>
+
+    <h3>Section Structure Pattern</h3>
+    <p>Every major section follows the same HTML structure. This consistency makes your page feel like a real product:</p>
+    <pre data-lang="HTML"><code><span class="c-tag">&lt;section</span> <span class="c-attr">class</span>=<span class="c-val">"section"</span> <span class="c-attr">id</span>=<span class="c-val">"my-section"</span><span class="c-tag">&gt;</span>
+
+  <span class="c-comm">&lt;!-- Small label above the heading --&gt;</span>
+  <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-val">"section-label"</span><span class="c-tag">&gt;</span>Chapter One<span class="c-tag">&lt;/div&gt;</span>
+
+  <span class="c-comm">&lt;!-- Main section heading --&gt;</span>
+  <span class="c-tag">&lt;h2&gt;</span>My Section Title<span class="c-tag">&lt;/h2&gt;</span>
+
+  <span class="c-comm">&lt;!-- Content goes here --&gt;</span>
+  <span class="c-tag">&lt;p&gt;</span>Your content...<span class="c-tag">&lt;/p&gt;</span>
+
+<span class="c-tag">&lt;/section&gt;</span></code></pre>
+  </section>
+
+  <!-- ── HERO ── -->
+  <section class="section" id="hero">
+    <div class="section-label">Lesson 6</div>
+    <h2>Hero Section</h2>
+    <p>
+      The hero is the first thing visitors see. It needs to be <strong>big, confident, and atmospheric</strong>. It typically contains: an eyebrow label, a large title, a subtitle, and badges.
+    </p>
+    <pre data-lang="HTML"><code><span class="c-tag">&lt;header</span> <span class="c-attr">class</span>=<span class="c-val">"hero"</span><span class="c-tag">&gt;</span>
+
+  <span class="c-comm">&lt;!-- Small text above the title --&gt;</span>
+  <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-val">"eyebrow"</span><span class="c-tag">&gt;</span>Addon Documentation<span class="c-tag">&lt;/div&gt;</span>
+
+  <span class="c-comm">&lt;!-- Big display title --&gt;</span>
+  <span class="c-tag">&lt;h1</span> <span class="c-attr">class</span>=<span class="c-val">"lesson-title"</span><span class="c-tag">&gt;</span>
+    Cultivator's<span class="c-tag">&lt;br&gt;</span>
+    <span class="c-tag">&lt;span&gt;</span>Anarchy<span class="c-tag">&lt;/span&gt;</span> <span class="c-comm">&lt;!-- accent color --&gt;</span>
+  <span class="c-tag">&lt;/h1&gt;</span>
+
+  <span class="c-comm">&lt;!-- Feature badges --&gt;</span>
+  <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-val">"badges"</span><span class="c-tag">&gt;</span>
+    <span class="c-tag">&lt;span</span> <span class="c-attr">class</span>=<span class="c-val">"badge purple"</span><span class="c-tag">&gt;</span>Feature One<span class="c-tag">&lt;/span&gt;</span>
+    <span class="c-tag">&lt;span</span> <span class="c-attr">class</span>=<span class="c-val">"badge"</span><span class="c-tag">&gt;</span>Feature Two<span class="c-tag">&lt;/span&gt;</span>
+  <span class="c-tag">&lt;/div&gt;</span>
+
+<span class="c-tag">&lt;/header&gt;</span></code></pre>
+
+    <h3>The Glowing Bottom Border Trick</h3>
+    <p>The hero has a gradient line at the bottom using <code>::after</code>. This is much more elegant than a plain <code>border-bottom</code>.</p>
+    <pre data-lang="CSS"><code><span class="c-tag">.hero</span> {
+  <span class="c-prop">position</span>: <span class="c-val">relative</span>; <span class="c-comm">/* needed for ::after positioning */</span>
+  <span class="c-prop">overflow</span>: <span class="c-val">hidden</span>;
+}
+<span class="c-tag">.hero::after</span> {
+  <span class="c-prop">content</span>:    <span class="c-val">''</span>;
+  <span class="c-prop">position</span>:   <span class="c-val">absolute</span>;
+  <span class="c-prop">bottom</span>: <span class="c-val">0</span>; <span class="c-prop">left</span>: <span class="c-val">-28px</span>; <span class="c-prop">right</span>: <span class="c-val">-28px</span>;
+  <span class="c-prop">height</span>:     <span class="c-val">1px</span>;
+  <span class="c-prop">background</span>: <span class="c-val">linear-gradient(90deg,
+    transparent, var(--primary), transparent)</span>;
+}</code></pre>
+  </section>
+
+  <!-- ── PSEUDO-ELEMENTS ── -->
+  <section class="section" id="pseudo">
+    <div class="section-label">Lesson 7</div>
+    <h2>Pseudo-Elements</h2>
+    <p>
+      <code>::before</code> and <code>::after</code> insert invisible "ghost" elements before or after any element's content. They must have <code>content: ''</code> (even if empty) to appear. They're used for decorative lines, overlays, icons, and stripes.
+    </p>
+
+    <div class="two-col">
+      <div class="panel-box">
+        <div class="panel-title purple">::before</div>
+        <div class="panel-desc" style="margin-bottom:10px;">Inserts a ghost element <em>before</em> the content. Used for: decorative lines, icons that prefix text, the line in our eyebrow labels.</div>
+        <pre style="margin:0;" data-lang="CSS"><code style="font-size:11px;"><span class="c-tag">.eyebrow::before</span> {
+  <span class="c-prop">content</span>: <span class="c-val">''</span>;
+  <span class="c-prop">width</span>:   <span class="c-val">28px</span>;
+  <span class="c-prop">height</span>:  <span class="c-val">1px</span>;
+  <span class="c-prop">background</span>: <span class="c-val">var(--primary)</span>;
+  <span class="c-prop">display</span>: <span class="c-val">inline-block</span>;
+}</code></pre>
+      </div>
+      <div class="panel-box">
+        <div class="panel-title gold">::after</div>
+        <div class="panel-desc" style="margin-bottom:10px;">Inserts a ghost element <em>after</em> the content. Used for: gradient lines, extending decorations, overlays.</div>
+        <pre style="margin:0;" data-lang="CSS"><code style="font-size:11px;"><span class="c-tag">.section-label::after</span> {
+  <span class="c-prop">content</span>:    <span class="c-val">''</span>;
+  <span class="c-prop">flex</span>:        <span class="c-val">1</span>;
+  <span class="c-prop">height</span>:      <span class="c-val">1px</span>;
+  <span class="c-prop">background</span>:  <span class="c-val">linear-gradient(
+    90deg,
+    var(--primary-dim),
+    transparent)</span>;
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="callout">
+      <span class="callout-label">Critical Rule</span>
+      A pseudo-element that uses <code>position: absolute</code> requires its <strong>parent</strong> to have <code>position: relative</code>. Otherwise it will position relative to the whole page. This is one of the most common beginner mistakes.
+    </div>
+
+    <h3>The Scanline Overlay</h3>
+    <p>The subtle horizontal stripes across the whole page are a <code>body::before</code> with <code>position: fixed</code> so they stay on screen at all times.</p>
+    <pre data-lang="CSS"><code><span class="c-tag">body::before</span> {
+  <span class="c-prop">content</span>:         <span class="c-val">''</span>;
+  <span class="c-prop">position</span>:        <span class="c-val">fixed</span>;
+  <span class="c-prop">inset</span>:           <span class="c-val">0</span>;       <span class="c-comm">/* same as top:0 right:0 bottom:0 left:0 */</span>
+  <span class="c-prop">pointer-events</span>:  <span class="c-val">none</span>;   <span class="c-comm">/* doesn't block mouse clicks */</span>
+  <span class="c-prop">z-index</span>:         <span class="c-val">0</span>;
+  <span class="c-prop">background</span>: <span class="c-val">repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0,0,0,0.035) 2px,
+    rgba(0,0,0,0.035) 4px
+  )</span>;
+}</code></pre>
+  </section>
+
+  <!-- ══════════════════════════════════
+       LESSON GROUP 3: COMPONENTS
+  ══════════════════════════════════ -->
+
+  <!-- ── CARDS & CALLOUTS ── -->
+  <section class="section" id="cards">
+    <div class="section-label">Lesson 8</div>
+    <h2>Cards &amp; Callout Boxes</h2>
+
+    <h3>Cards</h3>
+    <p>Cards group related content. The top accent stripe is done with <code>::before</code>. Variants (gold, green, dim) just override that one gradient.</p>
+    <pre data-lang="CSS"><code><span class="c-tag">.card</span> {
+  <span class="c-prop">background</span>:    <span class="c-val">var(--panel)</span>;
+  <span class="c-prop">border</span>:        <span class="c-val">1px solid var(--border)</span>;
+  <span class="c-prop">border-radius</span>: <span class="c-val">4px</span>;
+  <span class="c-prop">padding</span>:       <span class="c-val">22px 26px</span>;
+  <span class="c-prop">position</span>:      <span class="c-val">relative</span>; <span class="c-comm">/* for ::before */</span>
+  <span class="c-prop">overflow</span>:      <span class="c-val">hidden</span>;   <span class="c-comm">/* clip the ::before stripe */</span>
+}
+<span class="c-tag">.card::before</span> {
+  <span class="c-prop">content</span>: <span class="c-val">''</span>;
+  <span class="c-prop">position</span>: <span class="c-val">absolute</span>;
+  <span class="c-prop">top</span>: <span class="c-val">0</span>; <span class="c-prop">left</span>: <span class="c-val">0</span>; <span class="c-prop">right</span>: <span class="c-val">0</span>;
+  <span class="c-prop">height</span>: <span class="c-val">2px</span>;
+  <span class="c-prop">background</span>: <span class="c-val">linear-gradient(90deg, var(--primary), transparent)</span>;
+}
+<span class="c-comm">/* Gold variant — just override the gradient */</span>
+<span class="c-tag">.card.gold::before</span> {
+  <span class="c-prop">background</span>: <span class="c-val">linear-gradient(90deg, var(--gold), transparent)</span>;
+}</code></pre>
+
+    <h3>Live Card Examples</h3>
+    <div class="card" style="margin-bottom:12px;"><p>Default card — violet accent stripe on top. Use for general content.</p></div>
+    <div class="card gold" style="margin-bottom:12px;"><p>Gold card — golden accent. Use for important info, lore, or featured content.</p></div>
+    <div class="card green" style="margin-bottom:12px;"><p>Green card — use for success states, tips, or positive notes.</p></div>
+    <div class="card dim"><p>Dim card — use for technical notes, developer info, or secondary content.</p></div>
+
+    <h3>Callout Boxes</h3>
+    <p>Callouts use a <code>border-left</code> flag instead of a top stripe. Better for short inline notes.</p>
+    <pre data-lang="CSS"><code><span class="c-tag">.callout</span> {
+  <span class="c-prop">padding</span>:     <span class="c-val">14px 18px</span>;
+  <span class="c-prop">border-left</span>: <span class="c-val">2px solid var(--primary)</span>;
+  <span class="c-prop">background</span>:  <span class="c-val">var(--primary-soft)</span>;
+  <span class="c-prop">border-radius</span>: <span class="c-val">3px</span>;
+}</code></pre>
+    <div class="callout" style="margin-top:14px;"><span class="callout-label">Violet Callout</span>For tips, important notes, and key concepts.</div>
+    <div class="callout gold" style="margin-top:10px;"><span class="callout-label">Gold Callout</span>For step-by-step instructions or featured tips.</div>
+    <div class="callout green" style="margin-top:10px;"><span class="callout-label">Green Callout</span>For success messages or positive information.</div>
+    <div class="callout dim" style="margin-top:10px;"><span class="callout-label">Dim Callout</span>For secondary notes, caveats, or technical clarifications.</div>
+  </section>
+
+  <!-- ── CODE BLOCKS ── -->
+  <section class="section" id="code">
+    <div class="section-label">Lesson 9</div>
+    <h2>Code Blocks</h2>
+    <p>Two types: inline <code>code</code> for short snippets within text, and <code>&lt;pre&gt;&lt;code&gt;</code> blocks for multi-line examples.</p>
+    <pre data-lang="CSS"><code><span class="c-comm">/* Inline code */</span>
+<span class="c-tag">code</span> {
+  <span class="c-prop">font-family</span>:   <span class="c-val">'Share Tech Mono', monospace</span>;
+  <span class="c-prop">font-size</span>:     <span class="c-val">13px</span>;
+  <span class="c-prop">color</span>:         <span class="c-val">var(--primary)</span>;
+  <span class="c-prop">background</span>:    <span class="c-val">var(--code-bg)</span>;
+  <span class="c-prop">padding</span>:       <span class="c-val">1px 7px</span>;
+  <span class="c-prop">border-radius</span>: <span class="c-val">2px</span>;
+  <span class="c-prop">border</span>:        <span class="c-val">1px solid var(--border)</span>;
+}
+
+<span class="c-comm">/* Multi-line code block */</span>
+<span class="c-tag">pre</span> {
+  <span class="c-prop">background</span>:    <span class="c-val">var(--code-bg)</span>;
+  <span class="c-prop">border</span>:        <span class="c-val">1px solid var(--border)</span>;
+  <span class="c-prop">border-radius</span>: <span class="c-val">4px</span>;
+  <span class="c-prop">padding</span>:       <span class="c-val">20px 22px</span>;
+  <span class="c-prop">overflow-x</span>:    <span class="c-val">auto</span>; <span class="c-comm">/* horizontal scroll if too wide */</span>
+}
+<span class="c-comm">/* Language label in top-right using data attribute */</span>
+<span class="c-tag">pre::before</span> {
+  <span class="c-prop">content</span>:  <span class="c-val">attr(data-lang)</span>; <span class="c-comm">/* reads HTML attribute */</span>
+  <span class="c-prop">position</span>: <span class="c-val">absolute</span>;
+  <span class="c-prop">top</span>: <span class="c-val">10px</span>; <span class="c-prop">right</span>: <span class="c-val">14px</span>;
+  <span class="c-prop">font-size</span>: <span class="c-val">9px</span>; <span class="c-prop">color</span>: <span class="c-val">var(--text-dim)</span>;
+}</code></pre>
+    <div class="callout">
+      <span class="callout-label">attr() Trick</span>
+      <code>content: attr(data-lang)</code> reads the <code>data-lang="CSS"</code> attribute from your HTML and uses it as the label text. This is how the language tags (CSS, HTML) appear in the top-right of every code block on this page!
+    </div>
+  </section>
+
+  <!-- ── TABLES ── -->
+  <section class="section" id="tables">
+    <div class="section-label">Lesson 10</div>
+    <h2>Tables</h2>
+    <p>Tables are for structured data with rows and columns. Always wrap them in a <code>.table-wrap</code> div so they scroll horizontally on mobile instead of breaking the layout.</p>
+    <pre data-lang="HTML"><code><span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-val">"table-wrap"</span><span class="c-tag">&gt;</span>
+  <span class="c-tag">&lt;table&gt;</span>
+    <span class="c-tag">&lt;thead&gt;</span>
+      <span class="c-tag">&lt;tr&gt;</span>
+        <span class="c-tag">&lt;th&gt;</span>Column A<span class="c-tag">&lt;/th&gt;</span>
+        <span class="c-tag">&lt;th&gt;</span>Column B<span class="c-tag">&lt;/th&gt;</span>
+      <span class="c-tag">&lt;/tr&gt;</span>
+    <span class="c-tag">&lt;/thead&gt;</span>
+    <span class="c-tag">&lt;tbody&gt;</span>
+      <span class="c-tag">&lt;tr&gt;</span>
+        <span class="c-tag">&lt;td&gt;</span>Row 1 A<span class="c-tag">&lt;/td&gt;</span>
+        <span class="c-tag">&lt;td</span> <span class="c-attr">class</span>=<span class="c-val">"t-good"</span><span class="c-tag">&gt;</span>Row 1 B<span class="c-tag">&lt;/td&gt;</span>
+      <span class="c-tag">&lt;/tr&gt;</span>
+    <span class="c-tag">&lt;/tbody&gt;</span>
+  <span class="c-tag">&lt;/table&gt;</span>
+<span class="c-tag">&lt;/div&gt;</span></code></pre>
+
+    <h3>Key CSS Properties</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Property</th><th>Value</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td>border-collapse</td><td class="t-note">collapse</td><td>Removes gaps between cell borders</td></tr>
+          <tr><td>overflow-x</td><td class="t-note">auto</td><td>Adds horizontal scroll on small screens</td></tr>
+          <tr><td>tr:hover td</td><td class="t-note">background: ...</td><td>Row highlight on mouse hover</td></tr>
+          <tr><td>tr:last-child td</td><td class="t-note">border-bottom: none</td><td>Removes the last row's bottom line</td></tr>
+          <tr><td>vertical-align</td><td class="t-note">top</td><td>Aligns text to top of cell for multiline rows</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── GRID ── -->
+  <section class="section" id="grid">
+    <div class="section-label">Lesson 11</div>
+    <h2>CSS Grid Layouts</h2>
+    <p>CSS Grid is the easiest way to create multi-column layouts. Define columns with <code>grid-template-columns</code> and space between them with <code>gap</code>.</p>
+    <pre data-lang="CSS"><code><span class="c-comm">/* Two equal columns */</span>
+<span class="c-tag">.two-col</span> {
+  <span class="c-prop">display</span>:               <span class="c-val">grid</span>;
+  <span class="c-prop">grid-template-columns</span>: <span class="c-val">1fr 1fr</span>;
+  <span class="c-prop">gap</span>:                   <span class="c-val">14px</span>;
+}
+
+<span class="c-comm">/* Three equal columns */</span>
+<span class="c-tag">.three-col</span> {
+  <span class="c-prop">display</span>:               <span class="c-val">grid</span>;
+  <span class="c-prop">grid-template-columns</span>: <span class="c-val">1fr 1fr 1fr</span>;
+  <span class="c-prop">gap</span>:                   <span class="c-val">12px</span>;
+}
+
+<span class="c-comm">/* Collapse to 1 column on small screens */</span>
+<span class="c-tag">@media (max-width: 620px)</span> {
+  <span class="c-tag">.two-col</span> {
+    <span class="c-prop">grid-template-columns</span>: <span class="c-val">1fr</span>;
+  }
+}</code></pre>
+
+    <h3>Live Three-Column Example</h3>
+    <div class="three-col">
+      <div class="hover-card">
+        <div class="panel-title purple" style="font-size:16px;margin-bottom:6px;">Column One</div>
+        <div class="panel-desc">Each of these cards sits in a grid column automatically.</div>
+      </div>
+      <div class="hover-card">
+        <div class="panel-title gold" style="font-size:16px;margin-bottom:6px;">Column Two</div>
+        <div class="panel-desc">No floats, no inline-block. Just <code>display: grid</code>.</div>
+      </div>
+      <div class="hover-card">
+        <div class="panel-title green" style="font-size:16px;margin-bottom:6px;">Column Three</div>
+        <div class="panel-desc">Hover each card to see the transition effect.</div>
+      </div>
+    </div>
+
+    <div class="callout dim" style="margin-top:16px;">
+      <span class="callout-label">1fr Explained</span>
+      <code>fr</code> means "fraction of available space." <code>1fr 1fr</code> = two equal halves. <code>2fr 1fr</code> = left column is twice as wide as the right.
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════
+       LESSON GROUP 4: MOTION & INTERACTION
+  ══════════════════════════════════ -->
+
+  <!-- ── ANIMATIONS ── -->
+  <section class="section" id="motion">
+    <div class="section-label">Lessons 12 &amp; 13</div>
+    <h2>Animations &amp; Transitions</h2>
+
+    <h3>@keyframes Animations</h3>
+    <p>Define an animation with <code>@keyframes</code>, then apply it with the <code>animation</code> property.</p>
+    <pre data-lang="CSS"><code><span class="c-comm">/* 1. Define the keyframes */</span>
+<span class="c-tag">@keyframes</span> fadeUp {
+  <span class="c-tag">from</span> { <span class="c-prop">opacity</span>: <span class="c-val">0</span>; <span class="c-prop">transform</span>: <span class="c-val">translateY(18px)</span>; }
+  <span class="c-tag">to</span>   { <span class="c-prop">opacity</span>: <span class="c-val">1</span>; <span class="c-prop">transform</span>: <span class="c-val">translateY(0)</span>; }
+}
+
+<span class="c-comm">/* 2. Apply the animation */</span>
+<span class="c-tag">.hero</span> {
+  <span class="c-prop">animation</span>: <span class="c-val">fadeUp 0.7s ease both</span>;
+  <span class="c-comm">/*         name  dur  easing fill-mode */</span>
+}
+
+<span class="c-comm">/* Staggered delay for sections */</span>
+<span class="c-tag">.section</span> {
+  <span class="c-prop">animation</span>:       <span class="c-val">fadeUp 0.5s ease both</span>;
+  <span class="c-prop">animation-delay</span>: <span class="c-val">0.1s</span>; <span class="c-comm">/* starts 0.1s later */</span>
+}</code></pre>
+
+    <h3>Transition — Smooth State Changes</h3>
+    <p><code>transition</code> makes CSS property changes animate smoothly instead of snapping instantly. Used for hover effects.</p>
+    <pre data-lang="CSS"><code><span class="c-tag">.hover-card</span> {
+  <span class="c-prop">border</span>:     <span class="c-val">1px solid var(--border)</span>;
+  <span class="c-prop">transform</span>:  <span class="c-val">translateY(0)</span>;
+
+  <span class="c-comm">/* Animate these 3 properties smoothly */</span>
+  <span class="c-prop">transition</span>: <span class="c-val">border-color 0.2s,
+               background   0.2s,
+               transform    0.15s</span>;
+}
+
+<span class="c-tag">.hover-card:hover</span> {
+  <span class="c-prop">border-color</span>: <span class="c-val">var(--primary-dim)</span>;
+  <span class="c-prop">background</span>:   <span class="c-val">#17171e</span>;
+  <span class="c-prop">transform</span>:    <span class="c-val">translateY(-2px)</span>; <span class="c-comm">/* lifts slightly */</span>
+}</code></pre>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Easing</th><th>Feel</th><th>Best For</th></tr></thead>
+        <tbody>
+          <tr><td>ease</td><td class="t-note">Slow start, fast middle, slow end</td><td>Most UI transitions</td></tr>
+          <tr><td>ease-out</td><td class="t-note">Fast start, slows to stop</td><td>Elements entering screen</td></tr>
+          <tr><td>ease-in</td><td class="t-note">Slow start, fast end</td><td>Elements leaving screen</td></tr>
+          <tr><td>linear</td><td class="t-note">Constant speed</td><td>Looping animations, spinners</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ── FIXED SIDEBAR ── -->
+  <section class="section" id="sidebar">
+    <div class="section-label">Lesson 14</div>
+    <h2>Fixed Sidebar &amp; Scroll Script</h2>
+    <p>The dots on the left side of this page are a fixed navigation panel. They stay visible as you scroll and highlight to show your current position.</p>
+
+    <h3>HTML Structure</h3>
+    <pre data-lang="HTML"><code><span class="c-tag">&lt;nav</span> <span class="c-attr">class</span>=<span class="c-val">"toc"</span><span class="c-tag">&gt;</span>
+  <span class="c-tag">&lt;a</span> <span class="c-attr">class</span>=<span class="c-val">"toc-dot active"</span> <span class="c-attr">href</span>=<span class="c-val">"#intro"</span> <span class="c-attr">title</span>=<span class="c-val">"Introduction"</span><span class="c-tag">&gt;&lt;/a&gt;</span>
+  <span class="c-tag">&lt;a</span> <span class="c-attr">class</span>=<span class="c-val">"toc-dot"</span>        <span class="c-attr">href</span>=<span class="c-val">"#vars"</span>  <span class="c-attr">title</span>=<span class="c-val">"Variables"</span><span class="c-tag">&gt;&lt;/a&gt;</span>
+  <span class="c-comm">&lt;!-- one dot per section --&gt;</span>
+<span class="c-tag">&lt;/nav&gt;</span></code></pre>
+
+    <h3>CSS</h3>
+    <pre data-lang="CSS"><code><span class="c-tag">.toc</span> {
+  <span class="c-prop">position</span>:  <span class="c-val">fixed</span>;         <span class="c-comm">/* stays on screen */</span>
+  <span class="c-prop">top</span>:       <span class="c-val">50%</span>;
+  <span class="c-prop">left</span>:      <span class="c-val">18px</span>;
+  <span class="c-prop">transform</span>: <span class="c-val">translateY(-50%)</span>; <span class="c-comm">/* true vertical center */</span>
+  <span class="c-prop">display</span>:   <span class="c-val">flex</span>;
+  <span class="c-prop">flex-direction</span>: <span class="c-val">column</span>;
+  <span class="c-prop">gap</span>:       <span class="c-val">7px</span>;
+  <span class="c-prop">z-index</span>:   <span class="c-val">100</span>;
+}
+<span class="c-tag">.toc-dot.active</span> {
+  <span class="c-prop">background</span>:  <span class="c-val">var(--primary)</span>;
+  <span class="c-prop">box-shadow</span>:  <span class="c-val">0 0 8px var(--primary)</span>; <span class="c-comm">/* glow */</span>
+}
+<span class="c-comm">/* Hide on small screens (no room) */</span>
+<span class="c-tag">@media (max-width: 1100px)</span> {
+  <span class="c-tag">.toc</span> { <span class="c-prop">display</span>: <span class="c-val">none</span>; }
+}</code></pre>
+
+    <h3>JavaScript — Scroll Detection</h3>
+    <pre data-lang="JS"><code><span class="c-comm">// Get all dot links and all sections</span>
+<span class="c-prop">var</span> dots     = document.querySelectorAll('.toc-dot');
+<span class="c-prop">var</span> sections = document.querySelectorAll('section[id]');
+
+window.addEventListener('scroll', <span class="c-prop">function</span>() {
+  <span class="c-prop">var</span> scrollY  = window.scrollY + 200; <span class="c-comm">// offset so it triggers early</span>
+  <span class="c-prop">var</span> current  = '';
+
+  <span class="c-comm">// Find which section we're currently in</span>
+  sections.forEach(<span class="c-prop">function</span>(s) {
+    <span class="c-prop">if</span> (s.offsetTop <= scrollY) current = s.id;
+  });
+
+  <span class="c-comm">// Toggle 'active' class on matching dot</span>
+  dots.forEach(<span class="c-prop">function</span>(d) {
+    d.classList.toggle(
+      'active',
+      d.getAttribute('href') === '#' + current
+    );
+  });
+
+}, { passive: <span class="c-val">true</span> }); <span class="c-comm">// passive = better scroll performance</span></code></pre>
+  </section>
+
+  <!-- ── EXTRA POLISHES ── -->
+  <section class="section" id="summary">
+    <div class="section-label">Lesson 15 — Final</div>
+    <h2>Finishing Touches</h2>
+
+    <h3>Custom Scrollbar</h3>
+    <pre data-lang="CSS"><code><span class="c-tag">::-webkit-scrollbar</span>        { <span class="c-prop">width</span>: <span class="c-val">4px</span>; }
+<span class="c-tag">::-webkit-scrollbar-track</span>  { <span class="c-prop">background</span>: <span class="c-val">var(--bg)</span>; }
+<span class="c-tag">::-webkit-scrollbar-thumb</span>  { <span class="c-prop">background</span>: <span class="c-val">var(--primary-dim)</span>;
+                              <span class="c-prop">border-radius</span>: <span class="c-val">2px</span>; }</code></pre>
+
+    <h3>Gradient Dividers</h3>
+    <pre data-lang="CSS"><code><span class="c-tag">.divider</span> {
+  <span class="c-prop">height</span>:     <span class="c-val">1px</span>;
+  <span class="c-prop">margin</span>:     <span class="c-val">52px 0</span>;
+  <span class="c-prop">background</span>: <span class="c-val">linear-gradient(90deg, var(--primary-dim), transparent)</span>;
+}</code></pre>
+
+    <h3>Responsive Media Queries</h3>
+    <pre data-lang="CSS"><code><span class="c-comm">/* Stack grid to single column on mobile */</span>
+<span class="c-tag">@media (max-width: 620px)</span> {
+  <span class="c-tag">.two-col</span> { <span class="c-prop">grid-template-columns</span>: <span class="c-val">1fr</span>; }
+}
+<span class="c-comm">/* Hide sidebar on small screens */</span>
+<span class="c-tag">@media (max-width: 1100px)</span> {
+  <span class="c-tag">.toc</span> { <span class="c-prop">display</span>: <span class="c-val">none</span>; }
+}</code></pre>
+
+    <div class="divider"></div>
+
+    <h3>The Complete Checklist</h3>
+    <ul class="steps">
+      <li><span class="step-num">1</span><div class="step-body"><div class="step-title">Set CSS Variables</div>Define all colors, backgrounds, and font references in <code>:root</code> before writing any other CSS.</div></li>
+      <li><span class="step-num">2</span><div class="step-body"><div class="step-title">Apply the Universal Reset</div><code>*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }</code></div></li>
+      <li><span class="step-num">3</span><div class="step-body"><div class="step-title">Style the Body</div>Set your background, font, font-size, line-height, and optional background textures.</div></li>
+      <li><span class="step-num">4</span><div class="step-body"><div class="step-title">Load Google Fonts</div>Pick 1 display font, 1 body font, 1 monospace font. Link them in <code>&lt;head&gt;</code>.</div></li>
+      <li><span class="step-num">5</span><div class="step-body"><div class="step-title">Build the Wrapper</div><code>max-width + margin: 0 auto</code> centers your content at a comfortable reading width.</div></li>
+      <li><span class="step-num">6</span><div class="step-body"><div class="step-title">Build Reusable Components</div>Cards, callout boxes, badges. Each is a CSS class you reuse throughout the page.</div></li>
+      <li><span class="step-num">7</span><div class="step-body"><div class="step-title">Use Pseudo-Elements for Decoration</div><code>::before</code> and <code>::after</code> for accent stripes, gradient lines, and overlays.</div></li>
+      <li><span class="step-num">8</span><div class="step-body"><div class="step-title">Add Motion</div><code>@keyframes</code> for entrance animations. <code>transition</code> for hover effects. Keep them subtle.</div></li>
+      <li><span class="step-num">9</span><div class="step-body"><div class="step-title">Make It Responsive</div>Add <code>@media</code> queries to collapse multi-column grids on small screens.</div></li>
+      <li><span class="step-num">10</span><div class="step-body"><div class="step-title">Polish the Details</div>Custom scrollbar, gradient dividers, smooth scroll, footer. These small things elevate the page from good to professional.</div></li>
+    </ul>
+
+    <div class="callout gold" style="margin-top:24px;">
+      <span class="callout-label">The Golden Rule</span>
+      Every design decision should serve a purpose. Colors create hierarchy. Spacing creates breathing room. Typography creates personality. Animations create life. When all of these work together under one color theme — that's when a page stops feeling like HTML and starts feeling like a product.
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <footer>
+    HTML Design Mastery &nbsp;·&nbsp; Full Tutorial &nbsp;·&nbsp; 15 Core Lessons<br>
+    <span style="color:var(--primary);margin-top:6px;display:block;">Built for Students of Thrones Corporation International</span>
+    <span style="margin-top:14px;display:block;border-top:1px solid var(--border);padding-top:14px;letter-spacing:1.5px;">
+      © 2025 Thrones Corporation International &nbsp;·&nbsp; All Rights Reserved
+    </span>
+  </footer>
+
+</div>
+
+<script>
+  // Active TOC dot on scroll
+  var dots     = document.querySelectorAll('.toc-dot');
+  var sections = document.querySelectorAll('section[id], header[id]');
+
+  window.addEventListener('scroll', function() {
+    var scrollY = window.scrollY + 200;
+    var current = '';
+    sections.forEach(function(s) {
+      if (s.offsetTop <= scrollY) current = s.id;
+    });
+    dots.forEach(function(d) {
+      d.classList.toggle('active', d.getAttribute('href') === '#' + current);
+    });
+  }, { passive: true });
+</script>
+</body>
+</html>
